@@ -14,6 +14,20 @@ Instead of a new dialect or adding PostgreSql extensions into the core PostgreSq
 
 Use a custom SqlDelight module to implement grammar and type resolvers for VectorChord bm25 operations
 
+```sql
+SET search_path TO bm25_catalog;
+
+CREATE EXTENSION IF NOT EXISTS vchord_bm25;
+
+CREATE TABLE Documents (
+    id BIGINT GENERATED ALWAYS AS IDENTITY,
+    passage TEXT,
+    embedding bm25vector
+);
+
+CREATE INDEX documents_embedding_bm25 ON Documents USING bm25 (embedding bm25_ops);
+```
+
 
 ```shell
 docker run \
