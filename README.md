@@ -4,6 +4,8 @@ https://github.com/cashapp/sqldelight
 
 **Experimental**
 
+VectorChord-BM25, a new extension for PostgreSQL’s full-text search
+
 https://github.com/tensorchord/VectorChord-bm25
 
 Use with sqldelight branch https://github.com/griffio/sqldelight/tree/postgresql-modules with minor changes (Pushed to local maven `publishToMavenLocal`)
@@ -28,6 +30,9 @@ CREATE TABLE Documents (
 CREATE INDEX documents_embedding_bm25 ON Documents USING bm25 (embedding bm25_ops);
 ```
 
+To calculate the BM25 score (real type) between a bm25vector and a query, you’ll first need a document set. 
+Once that’s in place, you can use the <&> operator to perform the calculation.
+
 ```sql
 rankDocuments:
 SELECT id, passage, embedding <&> to_bm25query('documents_embedding_bm25', :document, 'Bert') AS rank
@@ -35,6 +40,8 @@ FROM Documents
 ORDER BY rank
 LIMIT 10;
 ```
+
+Use Docker container to run image with pre-installed extension
 
 ```shell
 docker run \
