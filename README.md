@@ -28,6 +28,13 @@ CREATE TABLE Documents (
 CREATE INDEX documents_embedding_bm25 ON Documents USING bm25 (embedding bm25_ops);
 ```
 
+```sql
+rankDocuments:
+SELECT id, passage, embedding <&> to_bm25query('documents_embedding_bm25', :document, 'Bert') AS rank
+FROM Documents
+ORDER BY rank
+LIMIT 10;
+```
 
 ```shell
 docker run \
