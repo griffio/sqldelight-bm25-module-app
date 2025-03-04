@@ -15,7 +15,7 @@ rootProject.name = "sqldelight-bm25-module-app"
 dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
-            val vSqlDelight = "05.02.2025.01-SNAPSHOT"
+            val vSqlDelight = "FIXME"
             val vIntellij = "231.9392.1"
             version("intellij", vIntellij)
             plugin("kotlin", "org.jetbrains.kotlin.jvm").version("2.1.0")
