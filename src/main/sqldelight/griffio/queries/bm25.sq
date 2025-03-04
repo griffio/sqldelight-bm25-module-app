@@ -21,7 +21,7 @@ tokenizeDocuments:
 UPDATE Documents SET embedding = tokenize(passage, 'Bert');
 
 rankDocuments:
-SELECT id, passage, embedding <&> to_bm25query('documents_embedding_bm25', ?, 'Bert') AS rank
+SELECT id, passage, embedding <&> to_bm25query('documents_embedding_bm25', :passage, 'Bert') AS rank
 FROM Documents
 ORDER BY rank
 LIMIT 10;

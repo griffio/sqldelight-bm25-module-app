@@ -2,11 +2,14 @@ package griffio
 
 import app.cash.sqldelight.dialect.api.DialectType
 import app.cash.sqldelight.dialect.api.IntermediateType
+import app.cash.sqldelight.dialect.api.PrimitiveType
 import app.cash.sqldelight.dialect.api.SqlDelightModule
 import app.cash.sqldelight.dialect.api.TypeResolver
 import app.cash.sqldelight.dialects.postgresql.PostgreSqlTypeResolver
 import app.cash.sqldelight.dialects.postgresql.grammar.PostgreSqlParser
 import app.cash.sqldelight.dialects.postgresql.grammar.PostgreSqlParserUtil
+import app.cash.sqldelight.dialects.postgresql.grammar.psi.PostgreSqlExtensionExpr
+import com.alecstrong.sql.psi.core.psi.SqlExpr
 import com.alecstrong.sql.psi.core.psi.SqlFunctionExpr
 import com.alecstrong.sql.psi.core.psi.SqlTypeName
 import com.intellij.lang.parser.GeneratedParserUtilBase.Parser
@@ -19,6 +22,7 @@ import griffio.grammar.Bm25ParserUtil.extension_expr
 import griffio.grammar.Bm25ParserUtil.index_method
 import griffio.grammar.Bm25ParserUtil.storage_parameters
 import griffio.grammar.Bm25ParserUtil.type_name
+import griffio.grammar.psi.Bm25ExtensionExpr
 import griffio.grammar.psi.Bm25TypeName
 
 class Bm25Module : SqlDelightModule {
@@ -79,6 +83,11 @@ private class Bm25TypeResolver(private val parentResolver: TypeResolver) : Postg
             is Bm25TypeName -> IntermediateType(Bm25VectorSqlType.BM25VECTOR)
             else -> super.definitionType(typeName)
         }
+    }
+
+    override fun resolvedType(expr: SqlExpr) : IntermediateType {
+        return if (expr is Bm25ExtensionExpr && expr.scoreOperatorExpression != null)
+            IntermediateType(PrimitiveType.REAL) else super.resolvedType(expr)
     }
 
     override fun functionType(functionExpr: SqlFunctionExpr): IntermediateType? =
