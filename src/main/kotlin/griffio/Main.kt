@@ -18,5 +18,5 @@ fun main() {
     println(sample.bm25Queries.tokenizeTocken("A quick brown fox jumps over the lazy dog.").executeAsOne())
     sample.bm25Queries.insertDocuments()
     sample.bm25Queries.tokenizeDocuments()
-    sample.bm25Queries.rankDocuments("PostgreSQL").executeAsList().map(::println)
+    sample.bm25Queries.rankDocuments("tsvector").executeAsList().map(::println)
 }
