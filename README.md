@@ -8,7 +8,7 @@ VectorChord-BM25, a new extension for PostgreSQL’s full-text search
 
 https://github.com/tensorchord/VectorChord-bm25
 
-Use with SqlDelight 2.1.0-SNAPSHOT
+Use with SqlDelight `2.1.0`
 
 ---
 
