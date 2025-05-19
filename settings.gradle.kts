@@ -20,6 +20,7 @@ dependencyResolutionManagement {
             plugin("kotlin", "org.jetbrains.kotlin.jvm").version("2.1.0")
             plugin("sqldelight", "app.cash.sqldelight").version(vSqlDelight)
             plugin("flyway", "org.flywaydb.flyway").version("10.1.0")
+            plugin("jreleaser", "org.jreleaser").version("1.18.0")
             library("sqldelight-dialect-api", "app.cash.sqldelight:dialect-api:$vSqlDelight")
             library("sqldelight-jdbc-driver", "app.cash.sqldelight:jdbc-driver:$vSqlDelight")
             library("sqldelight-postgresql-dialect", "app.cash.sqldelight:postgresql-dialect:$vSqlDelight")

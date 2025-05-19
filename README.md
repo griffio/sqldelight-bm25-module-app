@@ -16,6 +16,8 @@ Instead of a new dialect or adding PostgreSql extensions into the core PostgreSq
 
 Use a custom SqlDelight module to implement grammar and type resolvers for VectorChord bm25 operations
 
+`io.github.griffio:sqldelight-bm25:0.0.1` published in Maven Central https://central.sonatype.com/artifact/io.github.griffio/sqldelight-bm25/versions
+
 ```sql
 SET search_path TO bm25_catalog;
 
