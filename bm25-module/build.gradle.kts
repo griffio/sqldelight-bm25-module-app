@@ -7,7 +7,7 @@ plugins {
     id("maven-publish")
 }
 
-version = "0.0.1"
+version = "0.0.2"
 group = "io.github.griffio"
 
 repositories {
