@@ -32,27 +32,39 @@ class Bm25Module : SqlDelightModule {
         Bm25ParserUtil.reset()
         Bm25ParserUtil.overridePostgreSqlParser()
         // As the grammar doesn't support inheritance - override type_name manually to try inherited type_name
+        // Capture any existing overrides (e.g., from other PostgreSql Modules)
+        val previousTypeName = PostgreSqlParserUtil.type_name
+        val previousExtensionExpr = PostgreSqlParserUtil.extension_expr
+        val previousIndexMethod = PostgreSqlParserUtil.index_method
+        val previousStorageParameters = PostgreSqlParserUtil.storage_parameters
+        // Uses previous parser rule (e.g bm25 -> vectorChord? -> postgresql) if another module exists otherwise use PostgreSqlParser
         PostgreSqlParserUtil.type_name = Parser { psiBuilder, i ->
-            type_name?.parse(psiBuilder, i) ?: Bm25Parser.type_name_real(psiBuilder, i)
-                    || PostgreSqlParser.type_name_real(psiBuilder, i)
+            type_name?.parse(psiBuilder, i)
+                    ?: Bm25Parser.type_name_real(psiBuilder, i)
+                    || previousTypeName?.parse(psiBuilder, i)
+                    ?: PostgreSqlParser.type_name_real(psiBuilder, i)
         }
-
+        // etc
         PostgreSqlParserUtil.extension_expr = Parser { psiBuilder, i ->
-            extension_expr?.parse(psiBuilder, i) ?: Bm25Parser.extension_expr_real(psiBuilder, i)
-                    || PostgreSqlParser.extension_expr_real(psiBuilder, i)
+            extension_expr?.parse(psiBuilder, i)
+                    ?: Bm25Parser.extension_expr_real(psiBuilder, i)
+                    || previousExtensionExpr?.parse(psiBuilder, i)
+                    ?: PostgreSqlParser.extension_expr_real(psiBuilder, i)
         }
-
         // etc
         PostgreSqlParserUtil.index_method = Parser { psiBuilder, i ->
-            index_method?.parse(psiBuilder, i) ?: Bm25Parser.index_method_real(psiBuilder, i)
-                    || PostgreSqlParser.index_method_real(psiBuilder, i)
+            index_method?.parse(psiBuilder, i)
+                    ?: Bm25Parser.index_method_real(psiBuilder, i)
+                    || previousIndexMethod?.parse(psiBuilder, i)
+                    ?: PostgreSqlParser.index_method_real(psiBuilder, i)
         }
         // etc
         PostgreSqlParserUtil.storage_parameters = Parser { psiBuilder, i ->
-            storage_parameters?.parse(psiBuilder, i) ?: Bm25Parser.storage_parameters_real(psiBuilder, i)
-                    || PostgreSqlParser.storage_parameters_real(psiBuilder, i)
+            storage_parameters?.parse(psiBuilder, i)
+                    ?: Bm25Parser.storage_parameters_real(psiBuilder, i)
+                    || previousStorageParameters?.parse(psiBuilder, i)
+                    ?: PostgreSqlParser.storage_parameters_real(psiBuilder, i)
         }
-
     }
 }
 
@@ -81,7 +93,7 @@ private class Bm25TypeResolver(private val parentResolver: TypeResolver) : Postg
     override fun definitionType(typeName: SqlTypeName): IntermediateType {
         return when (typeName) {
             is Bm25TypeName -> IntermediateType(Bm25VectorSqlType.BM25VECTOR)
-            else -> super.definitionType(typeName)
+            else -> parentResolver.definitionType(typeName) // use parentResolver in the module chain
         }
     }
 
@@ -92,6 +104,7 @@ private class Bm25TypeResolver(private val parentResolver: TypeResolver) : Postg
 
     override fun functionType(functionExpr: SqlFunctionExpr): IntermediateType? =
         when (functionExpr.functionName.text.lowercase()) {
+            "create_tokenizer" -> IntermediateType(PrimitiveType.NULL)
             "tokenize" -> IntermediateType(Bm25VectorSqlType.BM25VECTOR)
             "to_bm25query" -> IntermediateType(Bm25VectorSqlType.BM25VECTOR)
             else -> super.functionType(functionExpr)
