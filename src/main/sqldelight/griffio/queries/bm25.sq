@@ -1,8 +1,8 @@
 tokenizeBert:
-SELECT tokenize(?, 'Bert');
+SELECT tokenize(?, 'bert');
 
 tokenizeTocken:
-SELECT tokenize(?, 'Tocken');
+SELECT tokenize(?, 'tocken');
 
 insertDocuments:
 INSERT INTO Documents (passage) VALUES
@@ -18,10 +18,10 @@ INSERT INTO Documents (passage) VALUES
 ('Effective search ranking algorithms, such as BM25, improve search results by understanding relevance.');
 
 tokenizeDocuments:
-UPDATE Documents SET embedding = tokenize(passage, 'Bert');
+UPDATE Documents SET embedding = tokenize(passage, 'bert');
 
 rankDocuments:
-SELECT id, passage, embedding <&> to_bm25query('documents_embedding_bm25', :passage, 'Bert') AS rank
+SELECT id, passage, embedding <&> to_bm25query('documents_embedding_bm25', tokenize(:passage, 'bert')) AS rank
 FROM Documents
 ORDER BY rank
 LIMIT 10;
