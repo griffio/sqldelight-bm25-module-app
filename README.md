@@ -1,4 +1,4 @@
-# SqlDelight 2.1.x Postgresql VectorChord bm25 module support prototype 
+# SqlDelight 2.2.x Postgresql VectorChord bm25 module support prototype 
 
 https://github.com/cashapp/sqldelight
 
@@ -8,7 +8,7 @@ VectorChord-BM25, a new extension for PostgreSQL’s full-text search
 
 https://github.com/tensorchord/VectorChord-bm25
 
-Use with SqlDelight `2.1.0`
+Use with SqlDelight `2.2.1`
 
 ---
 
@@ -16,7 +16,7 @@ Instead of a new dialect or adding PostgreSql extensions into the core PostgreSq
 
 Use a custom SqlDelight module to implement grammar and type resolvers for VectorChord bm25 operations
 
-`io.github.griffio:sqldelight-bm25:0.0.1` published in Maven Central https://central.sonatype.com/artifact/io.github.griffio/sqldelight-bm25/versions
+`io.github.griffio:sqldelight-bm25:0.0.2` published in Maven Central https://central.sonatype.com/artifact/io.github.griffio/sqldelight-bm25/versions
 
 ```sql
 SET search_path TO bm25_catalog;
@@ -47,8 +47,13 @@ Use Docker container to run image with pre-installed extension
 
 ```shell
 docker run \
-  --name vectorchord-demo \
-  -e POSTGRES_PASSWORD=mysecretpassword \
+  --name vchord-suite \
+  -e POSTGRES_PASSWORD=postgres \
   -p 5432:5432 \
-  -d ghcr.io/tensorchord/vchord_bm25-postgres:pg17-v0.1.0
+  -d tensorchord/vchord-suite:pg18-latest
+```
+
+```shell
+./gradlew build &&
+./gradlew flywayMigrate
 ```
