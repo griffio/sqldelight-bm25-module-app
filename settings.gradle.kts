@@ -14,10 +14,10 @@ rootProject.name = "sqldelight-bm25-module-app"
 dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
-            val vSqlDelight = "2.1.0"
+            val vSqlDelight = "2.2.1"
             val vIntellij = "231.9392.1"
             version("intellij", vIntellij)
-            plugin("kotlin", "org.jetbrains.kotlin.jvm").version("2.1.0")
+            plugin("kotlin", "org.jetbrains.kotlin.jvm").version("2.2.21")
             plugin("sqldelight", "app.cash.sqldelight").version(vSqlDelight)
             plugin("flyway", "org.flywaydb.flyway").version("10.1.0")
             plugin("jreleaser", "org.jreleaser").version("1.18.0")

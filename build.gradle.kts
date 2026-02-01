@@ -48,7 +48,7 @@ tasks {
 flyway {
     url = "jdbc:postgresql://localhost:5432/postgres"
     user = "postgres"
-    password = "mysecretpassword"
+    password = "postgres"
     locations = arrayOf("filesystem:${migrationsDir.get().asFile}")
     baselineOnMigrate = true
     baselineVersion = "0"

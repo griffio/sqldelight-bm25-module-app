@@ -80,7 +80,7 @@ jreleaser {
     gitRootSearch = true
     project {
         description = "SQLDelight module for bm25 support"
-        copyright = "2025 griffio"
+        copyright = "2026 griffio"
     }
     deploy {
         signing {
