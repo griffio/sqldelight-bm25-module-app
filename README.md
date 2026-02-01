@@ -19,17 +19,24 @@ Use a custom SqlDelight module to implement grammar and type resolvers for Vecto
 `io.github.griffio:sqldelight-bm25:0.0.2` published in Maven Central https://central.sonatype.com/artifact/io.github.griffio/sqldelight-bm25/versions
 
 ```sql
-SET search_path TO bm25_catalog;
+CREATE EXTENSION IF NOT EXISTS pg_tokenizer CASCADE;  -- for tokenizer
+CREATE EXTENSION IF NOT EXISTS vchord_bm25 CASCADE;   -- for bm25 ranking
 
-CREATE EXTENSION IF NOT EXISTS vchord_bm25;
+SET search_path TO tokenizer_catalog;
+
+SELECT create_tokenizer('bert', 'model = "bert_base_uncased"');
+SELECT create_tokenizer('tocken', 'model = "wiki_tocken"');
+
+SET search_path TO bm25_catalog;
 
 CREATE TABLE Documents (
     id BIGINT GENERATED ALWAYS AS IDENTITY,
     passage TEXT,
-    embedding bm25vector
+    embedding BM25VECTOR
 );
 
 CREATE INDEX documents_embedding_bm25 ON Documents USING bm25 (embedding bm25_ops);
+
 ```
 
 To calculate the BM25 score (real type) between a bm25vector and a query, you’ll first need a document set. 
@@ -37,7 +44,7 @@ Once that’s in place, you can use the <&> operator to perform the calculation.
 
 ```sql
 rankDocuments:
-SELECT id, passage, embedding <&> to_bm25query('documents_embedding_bm25', :document, 'Bert') AS rank
+SELECT id, passage, embedding <&> to_bm25query('documents_embedding_bm25', tokenize(:passage, 'bert')) AS rank
 FROM Documents
 ORDER BY rank
 LIMIT 10;
