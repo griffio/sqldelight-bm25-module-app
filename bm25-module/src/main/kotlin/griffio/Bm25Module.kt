@@ -8,7 +8,6 @@ import app.cash.sqldelight.dialect.api.TypeResolver
 import app.cash.sqldelight.dialects.postgresql.PostgreSqlTypeResolver
 import app.cash.sqldelight.dialects.postgresql.grammar.PostgreSqlParser
 import app.cash.sqldelight.dialects.postgresql.grammar.PostgreSqlParserUtil
-import app.cash.sqldelight.dialects.postgresql.grammar.psi.PostgreSqlExtensionExpr
 import com.alecstrong.sql.psi.core.psi.SqlExpr
 import com.alecstrong.sql.psi.core.psi.SqlFunctionExpr
 import com.alecstrong.sql.psi.core.psi.SqlTypeName
@@ -26,7 +25,9 @@ import griffio.grammar.psi.Bm25ExtensionExpr
 import griffio.grammar.psi.Bm25TypeName
 
 class Bm25Module : SqlDelightModule {
-    override fun typeResolver(parentResolver: TypeResolver): TypeResolver = Bm25TypeResolver(parentResolver)
+    override fun typeResolver(parentResolver: TypeResolver): TypeResolver {
+        return Bm25TypeResolver(parentResolver)
+    }
 
     override fun setup() {
         Bm25ParserUtil.reset()
@@ -87,19 +88,20 @@ enum class Bm25VectorSqlType(override val javaType: TypeName) : DialectType {
     }
 }
 
-// Change to inheritance so that definitionType can be called by polymorphism - not possible with delegation
+// Change to inheritance where some implementations may need to call `super` - not possible with delegation
+// parentResolver is called to delegate to the next TypeResolver in the chain
 private class Bm25TypeResolver(private val parentResolver: TypeResolver) : PostgreSqlTypeResolver(parentResolver) {
 
     override fun definitionType(typeName: SqlTypeName): IntermediateType {
         return when (typeName) {
             is Bm25TypeName -> IntermediateType(Bm25VectorSqlType.BM25VECTOR)
-            else -> parentResolver.definitionType(typeName) // use parentResolver in the module chain
+            else -> parentResolver.definitionType(typeName) // use parentResolver to use the module chain
         }
     }
 
     override fun resolvedType(expr: SqlExpr) : IntermediateType {
         return if (expr is Bm25ExtensionExpr && expr.scoreOperatorExpression != null)
-            IntermediateType(PrimitiveType.REAL) else super.resolvedType(expr)
+            IntermediateType(PrimitiveType.REAL) else parentResolver.resolvedType(expr) // use parentResolver to use the module chain
     }
 
     override fun functionType(functionExpr: SqlFunctionExpr): IntermediateType? =
@@ -107,6 +109,6 @@ private class Bm25TypeResolver(private val parentResolver: TypeResolver) : Postg
             "create_tokenizer" -> IntermediateType(PrimitiveType.NULL)
             "tokenize" -> IntermediateType(Bm25VectorSqlType.BM25VECTOR)
             "to_bm25query" -> IntermediateType(Bm25VectorSqlType.BM25VECTOR)
-            else -> super.functionType(functionExpr)
+            else -> super.functionType(functionExpr) // postgresql.PostgreSqlTypeResolver.functionType calls parentResolver
         }
 }
