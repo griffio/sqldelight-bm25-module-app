@@ -8,7 +8,7 @@ VectorChord-BM25, a new extension for PostgreSQL’s full-text search
 
 https://github.com/tensorchord/VectorChord-bm25
 
-Use with SqlDelight `2.2.1`
+Use with SqlDelight `2.4.0`
 
 ---
 
@@ -16,7 +16,7 @@ Instead of a new dialect or adding PostgreSql extensions into the core PostgreSq
 
 Use a custom SqlDelight module to implement grammar and type resolvers for VectorChord bm25 operations
 
-`io.github.griffio:sqldelight-bm25:0.0.2` published in Maven Central https://central.sonatype.com/artifact/io.github.griffio/sqldelight-bm25/versions
+`io.github.griffio:sqldelight-bm25:0.0.3` published in Maven Central https://central.sonatype.com/artifact/io.github.griffio/sqldelight-bm25/versions
 
 ```sql
 CREATE EXTENSION IF NOT EXISTS pg_tokenizer CASCADE;  -- for tokenizer
